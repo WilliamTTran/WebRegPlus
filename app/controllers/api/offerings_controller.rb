@@ -12,12 +12,12 @@ class Api::OfferingsController < ActionController::API
   end
 
   def get
-    render json: Course.all
+    render json: Offering.select("*").joins(:course)
   end
 
   # Clear all
   def delete
-    Course.destroy_all
+    Offering.destroy_all
     head :ok
   end
 end

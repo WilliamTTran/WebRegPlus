@@ -15,7 +15,12 @@ link_courses = 'https://ucsd.edu/catalog/courses/CSE.html'
 html_courses = urllib.request.urlopen(link_courses).read()
 soup_courses = BeautifulSoup(html_courses, 'html.parser')
 
+link_rmp = 'http://www.ratemyprofessors.com/search.jsp?query='
+
 API = 'http://localhost:3000/api/'
+
+requests.delete(API + 'offerings')
+requests.delete(API + 'courses')
 
 # Course description offering parsing
 
@@ -43,7 +48,6 @@ for n, d in zip(names, descs):
 
     courses.append(course)
 
-requests.delete(API + 'courses')
 requests.post(API + 'courses', json=courses)
 
 # Tentative course offering parsing
@@ -65,18 +69,31 @@ for entry in soup_offerings.table.find_all('tr')[1:]:
 
 
 # CAPEs
+prof_to_rmp = dict()
 
 driver = webdriver.Chrome()
 for offering in offerings:
-    if offering['prof_name'] is 'STAFF':
+    if 'STAFF' in offering['prof_name']:
         continue
+
+    # RMP
+    if offering['prof_name'] not in prof_to_rmp.keys():
+        driver.get(link_rmp + ('University of California San Diego ' + offering['prof_name']).replace(' ','+'))
+        # Click on search result
+        try:
+            driver.find_element_by_class_name('listing-name').click()
+            prof_to_rmp[offering['prof_name']] = driver.find_element_by_class_name('grade').text
+        except:
+            prof_to_rmp[offering['prof_name']] = None
+
+    offering['rmp_score'] = prof_to_rmp[offering['prof_name']]
 
     driver.get(link_capes)
     driver.find_element_by_id('Name').send_keys(offering['prof_name'])
     driver.find_element_by_id('courseNumber').send_keys(offering['course_number'])
     driver.find_element_by_id('courseNumber').send_keys(Keys.RETURN)
     soup_capes = BeautifulSoup(driver.page_source, 'html.parser')
-    
+
     if 'No CAPEs have been submitted that match your search criteria' in soup_capes.tbody.get_text():
         continue
     
@@ -97,11 +114,12 @@ for offering in offerings:
             elif index is 9 and 'N/A' not in cape_text:
                 avg_gpa += float(cape_text.split('(')[1][:-1])
 
+    offering['prof_name'] = soup_capes.tbody.td.get_text().replace('\xa0', '').replace('\t', '').strip()
     offering['class_rec_percent'] = round(class_rec_percent / cape_count, 1)
     offering['prof_rec_percent'] = round(prof_rec_percent / cape_count, 1)
     offering['study_hr'] = round(study_hr / cape_count, 2)
     offering['avg_gpa'] = round(avg_gpa / cape_count, 2)
 
+
 driver.close()
-requests.delete(API + 'offerings')
 requests.post(API + 'offerings', json=offerings)
