@@ -9,9 +9,15 @@ one:
   avg_gpa: 1.5
   rmp_score: 1.5
   season: MyString
-  time_begin: MyString
-  datetime: MyString
-  time_end: 2018-10-13 16:47:41
+  podcast_url: MyString
+  days_of_week: MyString
+  lecture_days: MyString
+  lecture_room: MyString
+  lecture_start: MyString
+  lecture_end: MyString
+  final_day: MyString
+  final_start: MyString
+  final_end: MyString
 
 two:
   course: two
@@ -22,6 +28,12 @@ two:
   avg_gpa: 1.5
   rmp_score: 1.5
   season: MyString
-  time_begin: MyString
-  datetime: MyString
-  time_end: 2018-10-13 16:47:41
+  podcast_url: MyString
+  days_of_week: MyString
+  lecture_days: MyString
+  lecture_room: MyString
+  lecture_start: MyString
+  lecture_end: MyString
+  final_day: MyString
+  final_start: MyString
+  final_end: MyString

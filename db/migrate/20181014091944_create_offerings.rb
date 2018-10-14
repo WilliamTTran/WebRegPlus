@@ -9,9 +9,15 @@ class CreateOfferings < ActiveRecord::Migration[5.2]
       t.float :avg_gpa
       t.float :rmp_score
       t.string :season
-      t.string :time_begin
-      t.string :datetime
-      t.datetime :time_end
+      t.string :podcast_url
+      t.string :days_of_week
+      t.string :lecture_days
+      t.string :lecture_room
+      t.string :lecture_start
+      t.string :lecture_end
+      t.string :final_day
+      t.string :final_start
+      t.string :final_end
 
       t.timestamps
     end

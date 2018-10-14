@@ -5,7 +5,6 @@ one:
   name: MyString
   prereqs: MyString
   description: MyString
-  required: false
   units: MyString
 
 two:
@@ -13,5 +12,4 @@ two:
   name: MyString
   prereqs: MyString
   description: MyString
-  required: false
   units: MyString
