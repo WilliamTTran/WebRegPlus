@@ -7,3 +7,7 @@ https://yarnpkg.com/lang/en/docs/install/#windows-stable
 
 yarn install
 gem install rails
+
+
+Selenium browser simulator
+https://chromedriver.storage.googleapis.com/index.html?path=2.42/
