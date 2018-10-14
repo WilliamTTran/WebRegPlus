@@ -30,8 +30,8 @@ for n, d in zip(names, descs):
     number = n.split('. ')[0]
     name = n.split('. ')[1]
     name = name[:name.find(' (')].strip()
-    prereqs = d.split(' Prerequisites: ')[0] if 'Prerequisites:' in d else None
-    description = d.split(' Prerequisites: ')[1] if 'Prerequisites:' in d else d
+    prereqs = d.split(' Prerequisites: ')[1] if 'Prerequisites:' in d else None
+    description = d.split(' Prerequisites: ')[0] if 'Prerequisites:' in d else d
     units = n[n.find('(') + 1:n.find(')')]
     course = {
         'number': number,
