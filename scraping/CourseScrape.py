@@ -204,7 +204,7 @@ for offering in offerings:
             elif index is 9 and 'N/A' not in cape_text:
                 avg_gpa += float(cape_text.split('(')[1][:-1])
 
-    offering['prof_name'] = soup_capes.tbody.td.get_text().replace('\xa0', '').replace('\t', '').strip()
+    # offering['prof_name'] = soup_capes.tbody.td.get_text().replace('\xa0', '').replace('\t', '').strip()
     offering['class_rec_percent'] = round(class_rec_percent / cape_count, 1)
     offering['prof_rec_percent'] = round(prof_rec_percent / cape_count, 1)
     offering['study_hr'] = round(study_hr / cape_count, 2)
