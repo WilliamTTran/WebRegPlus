@@ -1,6 +1,6 @@
 class Api::CoursesController < ActionController::API
   def post
-    Course.create(request.body.read)
+    Course.create(JSON.parse(request.raw_post))
     head :ok
   end
 

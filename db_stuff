@@ -1,5 +1,5 @@
 Course
-rails generate model Course number:string name:string prereqs:string description:string required:boolean
+rails generate model Course number:string name:string prereqs:string description:string required:boolean units:string
 
 Offering
 rails generate model Offering course:references prof_name:string prof_rec_percent:float class_rec_percent:float study_hr:float avg_gpa:float rmp_score:float season:string time_begin datetime time_end:datetime

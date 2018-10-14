@@ -1,6 +1,6 @@
 class Api::OfferingsController < ActionController::API
   def post
-    offerings = request.body.read
+    offerings = JSON.parse(request.raw_post)
     offerings.each do |offering|
       offering['course_id'] = Course.find_by_number(offering['course_number'])
     end

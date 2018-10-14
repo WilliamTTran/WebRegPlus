@@ -4,8 +4,8 @@ Rails.application.routes.draw do
     post 'courses/' => 'courses#post'
     get 'courses/' => 'courses#get'
 
-    post 'offering/' => 'offering#post'
-    get 'offering/' => 'offering#get'
+    post 'offerings/' => 'offerings#post'
+    get 'offerings/' => 'offerings#get'
   end
 
   root to: 'hello#index'

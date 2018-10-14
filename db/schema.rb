@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_10_13_234741) do
+ActiveRecord::Schema.define(version: 2018_10_14_014550) do
 
   create_table "courses", force: :cascade do |t|
     t.string "number"
@@ -18,6 +18,7 @@ ActiveRecord::Schema.define(version: 2018_10_13_234741) do
     t.string "prereqs"
     t.string "description"
     t.boolean "required"
+    t.string "units"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

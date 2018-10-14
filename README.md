@@ -10,4 +10,4 @@ gem install rails
 
 
 Selenium browser simulator
-https://chromedriver.storage.googleapis.com/index.html?path=2.42/
+medriver.storage.googleapis.com/index.html?path=2.42/https://chro
