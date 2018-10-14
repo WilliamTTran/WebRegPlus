@@ -15,7 +15,7 @@ link_courses = 'https://ucsd.edu/catalog/courses/CSE.html'
 html_courses = urllib.request.urlopen(link_courses).read()
 soup_courses = BeautifulSoup(html_courses, 'html.parser')
 
-API = 'localhost:3000/api/'
+API = 'http://localhost:3000/api/'
 
 
 # Tentative course offering parsing
@@ -23,11 +23,11 @@ API = 'localhost:3000/api/'
 seasons = ['fall', 'winter', 'spring']
 offerings = []
 for entry in soup_offerings.table.find_all('tr')[1:]:
-    offering = {'number': None, 'professor': None, 'season': None}
+    offering = {'course_number': None, 'professor': None, 'season': None}
     for index, element in enumerate(entry.find_all('td')):
         offering_text = element.get_text().replace('\xa0', '').replace('\t', '').strip()
         if index is 0:
-            offering['number'] = offering_text
+            offering['course_number'] = offering_text
         elif index is not 1:
             offering['season'] = seasons[index - 2]
             for prof in offering_text.split('\n'):
@@ -40,6 +40,9 @@ for entry in soup_offerings.table.find_all('tr')[1:]:
 
 driver = webdriver.Chrome()
 for offering in offerings:
+    if offering['professor'] is 'STAFF':
+        continue
+
     driver.get(link_capes)
     driver.find_element_by_id('Name').send_keys(offering['professor'])
     driver.find_element_by_id('courseNumber').send_keys(offering['number'])
