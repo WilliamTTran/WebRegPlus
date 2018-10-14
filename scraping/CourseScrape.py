@@ -156,7 +156,8 @@ for entry in soup_offerings.table.find_all('tr')[1:]:
 # CAPEs
 prof_to_rmp = dict()
 
-driver = webdriver.Chrome(chrome_options=chrome_options)
+driver = webdriver.Chrome()
+driver_rmp = webdriver.Chrome(chrome_options=chrome_options)
 post_offerings = []
 for offering in offerings:
     if 'STAFF' in offering['prof_name']:
@@ -168,11 +169,11 @@ for offering in offerings:
             name = names_to_full_names[offering['prof_name']]
         else:
             name = offering['prof_name']
-        driver.get(link_rmp + ('University of California San Diego ' + name).replace(' ', '+'))
+            driver_rmp.get(link_rmp + ('University of California San Diego ' + name).replace(' ', '+'))
         # Click on search result
         try:
-            driver.find_element_by_class_name('PROFESSOR').find_element_by_tag_name('a').click()
-            prof_to_rmp[offering['prof_name']] = driver.find_element_by_class_name('grade').text
+            driver_rmp.find_element_by_class_name('PROFESSOR').find_element_by_tag_name('a').click()
+            prof_to_rmp[offering['prof_name']] = driver_rmp.find_element_by_class_name('grade').text
         except:
             prof_to_rmp[offering['prof_name']] = None
 
@@ -210,21 +211,22 @@ for offering in offerings:
     offering['study_hr'] = round(study_hr / cape_count, 2)
     offering['avg_gpa'] = round(avg_gpa / cape_count, 2)
 
-    try:
-        info_arr = course_number_to_info_arr[offering['course_number']]
-        for elem in [x for x in info_arr if x['prof_name'] == offering['prof_name']]:
-            offering_new = offering.copy()
-            offering_new['podcast_url'] = elem['podcast_url']
-            offering_new['lecture_days'] = elem['lecture_days']
-            offering_new['lecture_start'] = elem['lecture_start']
-            offering_new['lecture_end'] = elem['lecture_end']
-            offering_new['lecture_room'] = elem['lecture_room']
-            offering_new['final_day'] = elem['final_day']
-            offering_new['final_start'] = elem['final_start']
-            offering_new['final_end'] = elem['final_end']
-            post_offerings.append(offering_new)
-    except:
-        post_offerings.append(offering)
+    #try:
+    info_arr = course_number_to_info_arr[offering['course_number']]
+    for elem in [x for x in info_arr if x['prof_name'] == offering['prof_name']]:
+        offering_new = offering.copy()
+        offering_new['podcast_url'] = elem['podcast_url']
+        offering_new['lecture_days'] = elem['lecture_days']
+        offering_new['lecture_start'] = elem['lecture_start']
+        offering_new['lecture_end'] = elem['lecture_end']
+        offering_new['lecture_room'] = elem['lecture_room']
+        offering_new['final_day'] = elem['final_day']
+        offering_new['final_start'] = elem['final_start']
+        offering_new['final_end'] = elem['final_end']
+        post_offerings.append(offering_new)
+    #except:
+        #post_offerings.append(offering)
 
 driver.close()
+driver_rmp.close()
 requests.post(API + 'offerings', json=post_offerings)
