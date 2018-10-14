@@ -1,30 +1,21 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[37]:
-
-
 from bs4 import BeautifulSoup
 import urllib
+import requests
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
-
-# In[48]:
-
-
-link_offerings = "https://cse.ucsd.edu/undergraduate/2018-2019-tentative-undergraduate-course-offerings"
+# Links
+link_offerings = 'https://cse.ucsd.edu/undergraduate/2018-2019-tentative-undergraduate-course-offerings'
 html_offerings = urllib.request.urlopen(link_offerings).read()
 soup_offerings = BeautifulSoup(html_offerings, 'html.parser')
 
 link_capes = 'http://www.cape.ucsd.edu'
 
-link_courses = "https://ucsd.edu/catalog/courses/CSE.html"
+link_courses = 'https://ucsd.edu/catalog/courses/CSE.html'
 html_courses = urllib.request.urlopen(link_courses).read()
 soup_courses = BeautifulSoup(html_courses, 'html.parser')
 
-
-# In[39]:
+API = 'localhost:3000/api/'
 
 
 # Tentative course offering parsing
@@ -43,9 +34,6 @@ for entry in soup_offerings.table.find_all('tr')[1:]:
                 if prof is not '':
                     offering['professor'] = prof
                     offerings.append(offering.copy())
-
-
-# In[31]:
 
 
 # CAPEs
@@ -84,9 +72,7 @@ for offering in offerings:
     offering['avg_gpa'] = round(avg_gpa / cape_count, 2)
 
 driver.close()
-
-
-# In[69]:
+requests.post(API + 'offerings', json=offerings)
 
 
 # Course description offering parsing
@@ -115,3 +101,4 @@ for n, d in zip(names, descs):
 
     courses.append(course)
 
+requests.post(API + 'courses', json=courses)
