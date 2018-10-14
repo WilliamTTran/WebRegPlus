@@ -5,11 +5,11 @@ one:
   name: MyString
   prereqs: MyString
   description: MyString
-  required: false
+  units: MyString
 
 two:
   number: MyString
   name: MyString
   prereqs: MyString
   description: MyString
-  required: false
+  units: MyString

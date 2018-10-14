@@ -10,14 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_10_13_234741) do
+ActiveRecord::Schema.define(version: 2018_10_14_091953) do
 
   create_table "courses", force: :cascade do |t|
     t.string "number"
     t.string "name"
     t.string "prereqs"
     t.string "description"
-    t.boolean "required"
+    t.string "units"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -31,9 +31,15 @@ ActiveRecord::Schema.define(version: 2018_10_13_234741) do
     t.float "avg_gpa"
     t.float "rmp_score"
     t.string "season"
-    t.string "time_begin"
-    t.string "datetime"
-    t.datetime "time_end"
+    t.string "podcast_url"
+    t.string "days_of_week"
+    t.string "lecture_days"
+    t.string "lecture_room"
+    t.string "lecture_start"
+    t.string "lecture_end"
+    t.string "final_day"
+    t.string "final_start"
+    t.string "final_end"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["course_id"], name: "index_offerings_on_course_id"

@@ -5,7 +5,7 @@ class CreateCourses < ActiveRecord::Migration[5.2]
       t.string :name
       t.string :prereqs
       t.string :description
-      t.boolean :required
+      t.string :units
 
       t.timestamps
     end
