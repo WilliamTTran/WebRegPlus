@@ -13,3 +13,7 @@ bundle install
 To Run:
 rails s
 ruby ./bin/webpack-dev-server
+
+
+Selenium browser simulator
+https://chromedriver.storage.googleapis.com/index.html?path=2.42/
