@@ -68,22 +68,7 @@ function createSchedule(taken, data) {
         console.log(schedule[2][index].number + '\t' + schedule[2][index].name)
     }
 
-
-    // for(let index in electiveCourses) {
-    //     let offering = electiveCourses[index];
-    //     courseScores.push({
-    //         course: offering,
-    //         score: (offering.prof_rec_percent + offering.class_rec_percent + (offering.rmp_score) * 20.00) / 3
-    //     });
-    // }
-    // courseScores.sort(function(a, b) {
-    //     return a.score - b.score;
-    // });
-    //
-    // for (let index in courseScores) {
-    //     insertIntoSchedule(courseScores[index].course, schedule, taken);
-    // }
-
+    return schedule;
 }
 
 function insertIntoSchedule(offering, schedule, taken) {
@@ -99,7 +84,7 @@ function insertIntoSchedule(offering, schedule, taken) {
 function canTakeQuarter(offering, seasonsNowAndAfter, taken) {
     if (taken.includes(offering.number) || prereqCheck(offering, taken).length > 0) return false;
     for (let s = 0; s < seasonsNowAndAfter.length; s++) {
-        for (let c = 0; c < seasonsNowAndAfter[s]; c++) {
+        for (let c = 0; c < seasonsNowAndAfter[s].length; c++) {
             if (seasonsNowAndAfter[s][c].number === offering.number) {
                 return false;
             }
