@@ -377,7 +377,7 @@
                         this.winterItems.push({
                             course: schedule[season][course].number,
                             name: schedule[season][course].name,
-                            profName: schedule[season][course].pKrof_name,
+                            profName: schedule[season][course].prof_name,
                             profRec: schedule[season][course].prof_rec_percent,
                             studentRec: schedule[season][course].class_rec_precent,
                             rmpScore: schedule[season][course].rmpScore,
