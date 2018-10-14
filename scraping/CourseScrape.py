@@ -6,6 +6,11 @@ from selenium.webdriver.common.keys import Keys
 
 import config
 
+# Disable js
+from selenium.webdriver.chrome.options import Options
+chrome_options = Options()
+chrome_options.add_experimental_option( "prefs",{'profile.managed_default_content_settings.javascript': 2})
+
 # Links
 link_offerings = 'https://cse.ucsd.edu/undergraduate/2018-2019-tentative-undergraduate-course-offerings'
 html_offerings = urllib.request.urlopen(link_offerings).read()
@@ -151,7 +156,7 @@ for entry in soup_offerings.table.find_all('tr')[1:]:
 # CAPEs
 prof_to_rmp = dict()
 
-driver = webdriver.Chrome()
+driver = webdriver.Chrome(chrome_options=chrome_options)
 post_offerings = []
 for offering in offerings:
     if 'STAFF' in offering['prof_name']:
