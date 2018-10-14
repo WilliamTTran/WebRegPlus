@@ -7,7 +7,13 @@ https://yarnpkg.com/lang/en/docs/install/#windows-stable
 
 yarn install
 gem install rails
+bundle install
+
+
+To Run:
+rails s
+ruby ./bin/webpack-dev-server
 
 
 Selenium browser simulator
-medriver.storage.googleapis.com/index.html?path=2.42/https://chro
+https://chromedriver.storage.googleapis.com/index.html?path=2.42/
