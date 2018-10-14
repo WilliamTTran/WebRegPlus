@@ -7,3 +7,9 @@ https://yarnpkg.com/lang/en/docs/install/#windows-stable
 
 yarn install
 gem install rails
+bundle install
+
+
+To Run:
+rails s
+ruby ./bin/webpack-dev-server
