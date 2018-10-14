@@ -73,11 +73,14 @@ function createSchedule(taken, data) {
 
 function insertIntoSchedule(offering, schedule, taken) {
     if (schedule[0].length < 3 && offering.season === 'fall' && canTakeQuarter(offering, schedule, taken)) {
-        schedule[0].push(offering);
+        if (!checkTimeConflict(schedule[0], offering))
+            schedule[0].push(offering);
     } else if (schedule[1].length < 3 && offering.season === 'winter' && canTakeQuarter(offering, [schedule[1], schedule[2]], taken.concat(schedule[0].map(function(c) { return c.number; })))) {
-        schedule[1].push(offering);
+        if (!checkTimeConflict(schedule[1], offering))
+            schedule[1].push(offering);
     } else if (schedule[2].length < 3 && offering.season === 'spring' && canTakeQuarter(offering, [schedule[2]], taken.concat(schedule[0].concat(schedule[1]).map(function(c) { return c.number; })))) {
-        schedule[2].push(offering);
+        if (!checkTimeConflict(schedule[2], offering))
+            schedule[2].push(offering);
     }
 }
 
@@ -127,6 +130,42 @@ function prereqCheck(course, classesTaken) {
     return needLeft;
 }
 
+function checkTimeConflict(season, course) {
+    const days = ['M', 'TU', 'W', 'TH', 'F'];
+    for (let i = 0; i < season.length; i++) {
+        let lecConflict = false;
+        for (let j = 0; j < days.length; j++) {
+            if (season[i].lecture_days.includes(days[j]) && course.lecture_days.includes(days[j])) {
+                lecConflict = true;
+                break;
+            }
+        }
+        if (!lecConflict) {
+            const s_s = get24Hr(season[i].lecture_start);
+            const s_e = get24Hr(season[i].lecture_end);
+            const c_s = get24Hr(course.lecture_start);
+            const c_e = get24Hr(course.lecture_end);
+            // Lecture conflict
+            if ((s_s <= c_s && s_e >= c_s) || (s_s <= c_e && s_e >= c_e)) return true;
+        }
+
+        if (season[i].final_day !== course.final_day) continue;
+        const s_fs = get24Hr(season[i].final_start);
+        const s_fe = get24Hr(season[i].final_end);
+        const c_fs = get24Hr(course.final_start);
+        const c_se = get24Hr(course.final_end);
+        // Finals conflict
+        if ((s_fs <= c_fs && s_fe >= c_fs) || (s_fs <= c_fe && s_e >= c_fe)) return true;
+    }
+    return false;
+}
+
+function get24Hr(time) {
+    const hr = (Number.parseInt(time.split(':')[0]) + (time.includes('PM') ? 12 : 0) ) % 24;
+    return hr + ':' + time.split(':')[1].replace(/[^0-9]/g, '');
+}
+
+console.log(get24Hr('3:00 PM'))
 
 function calculateData(schedule) {
     const seasons = ['fall', 'winter', 'spring'];
