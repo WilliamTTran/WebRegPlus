@@ -95,9 +95,9 @@ for offering_tr in soup_hours.find('table', id='courses_DataList').find_all('tr'
 
     try:
         lecture_tds = soup_info.find('tr', class_='lecture').find_all('td')
-        lecture_days = lecture_tds[2]
-        lecture_start = ' '.join(lecture_tds[3].get_text().split(' ')[:2])
-        lecture_end = ' '.join(lecture_tds[3].get_text().split(' ')[3:5])
+        lecture_days = lecture_tds[2].span.get_text()
+        lecture_start = ' '.join(lecture_tds[3].get_text().replace('\n', '').split(' ')[:2])
+        lecture_end = ' '.join(lecture_tds[3].get_text().replace('\n', '').split(' ')[3:5])
         lecture_room = lecture_tds[5].get_text()
     except:
         lecture_start = None
@@ -108,8 +108,8 @@ for offering_tr in soup_hours.find('table', id='courses_DataList').find_all('tr'
     try:
         final_tds = soup_info.find('tr', class_='final').find_all('td')
         final_day = final_tds[1].get_text()
-        final_start = ' '.join(final_tds[3].get_text().split(' ')[:2])
-        final_end = ' '.join(final_tds[3].get_text().split(' ')[3:5])
+        final_start = ' '.join(final_tds[3].get_text().replace('\n', '').split(' ')[:2])
+        final_end = ' '.join(final_tds[3].span.get_text().replace('\n', '').split(' ')[3:5])
     except:
         final_day = None
         final_start = None
