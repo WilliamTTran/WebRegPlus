@@ -3,11 +3,15 @@
   "private": true,
   "dependencies": {
     "@rails/webpacker": "^3.5.5",
+    "babel-preset-stage-2": "^6.24.1",
     "babel-preset-vue-app": "^2.0.0",
     "bootstrap-vue": "^2.0.0-rc.11",
     "vue": "^2.5.17",
+    "vue-full-calendar": "^2.7.0",
     "vue-loader": "14.2.2",
-    "vue-template-compiler": "^2.5.17"
+    "vue-schedule": "^2.0.4",
+    "vue-template-compiler": "^2.5.17",
+    "vue-time-slot": "^0.0.1"
   },
   "devDependencies": {
     "webpack-dev-server": "2.11.2"

@@ -12,9 +12,8 @@
 
 </script>
 
-<style scoped>
-p {
-  font-size: 2em;
-  text-align: center;
+<style>
+body {
+  background-color : #EFEFEF;
 }
 </style>
