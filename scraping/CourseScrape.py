@@ -214,31 +214,29 @@ for offering in offerings:
     driver.find_element_by_id('courseNumber').send_keys(Keys.RETURN)
     soup_capes = BeautifulSoup(driver.page_source, 'html.parser')
 
-    if 'No CAPEs have been submitted that match your search criteria' in soup_capes.tbody.get_text():
-        continue
+    if 'No CAPEs have been submitted that match your search criteria' not in soup_capes.tbody.get_text():
+        class_rec_percent = 0  # i5
+        prof_rec_percent = 0  # i6
+        study_hr = 0  # i7
+        avg_gpa = 0  # i9
+        cape_count = len(soup_capes.tbody.find_all('tr'))
+        for entry in soup_capes.tbody.find_all('tr'):
+            for index, element in enumerate(entry.find_all('td')):
+                cape_text = element.get_text().replace('\xa0', '').replace('\t', '').strip()
+                if index is 5:
+                    class_rec_percent += float(cape_text.replace(' %', ''))
+                elif index is 6:
+                    prof_rec_percent += float(cape_text.replace(' %', ''))
+                elif index is 7:
+                    study_hr += float(cape_text)
+                elif index is 9 and 'N/A' not in cape_text:
+                    avg_gpa += float(cape_text.split('(')[1][:-1])
 
-    class_rec_percent = 0  # i5
-    prof_rec_percent = 0  # i6
-    study_hr = 0  # i7
-    avg_gpa = 0  # i9
-    cape_count = len(soup_capes.tbody.find_all('tr'))
-    for entry in soup_capes.tbody.find_all('tr'):
-        for index, element in enumerate(entry.find_all('td')):
-            cape_text = element.get_text().replace('\xa0', '').replace('\t', '').strip()
-            if index is 5:
-                class_rec_percent += float(cape_text.replace(' %', ''))
-            elif index is 6:
-                prof_rec_percent += float(cape_text.replace(' %', ''))
-            elif index is 7:
-                study_hr += float(cape_text)
-            elif index is 9 and 'N/A' not in cape_text:
-                avg_gpa += float(cape_text.split('(')[1][:-1])
-
-    # offering['prof_name'] = soup_capes.tbody.td.get_text().replace('\xa0', '').replace('\t', '').strip()
-    offering['class_rec_percent'] = round(class_rec_percent / cape_count, 1)
-    offering['prof_rec_percent'] = round(prof_rec_percent / cape_count, 1)
-    offering['study_hr'] = round(study_hr / cape_count, 2)
-    offering['avg_gpa'] = round(avg_gpa / cape_count, 2)
+        # offering['prof_name'] = soup_capes.tbody.td.get_text().replace('\xa0', '').replace('\t', '').strip()
+        offering['class_rec_percent'] = round(class_rec_percent / cape_count, 1)
+        offering['prof_rec_percent'] = round(prof_rec_percent / cape_count, 1)
+        offering['study_hr'] = round(study_hr / cape_count, 2)
+        offering['avg_gpa'] = round(avg_gpa / cape_count, 2)
 
     try:
         info_arr = course_number_to_info_arr[offering['course_number']]
