@@ -1,9 +1,9 @@
 const axios = require('axios');
-
-axios.defaults.baseURL = '/api/v1';
+require('babel-polyfill')
+axios.defaults.baseURL = '/api';
 
 export default {
   getOfferings: async () => {
-    return (await axios.get('offerings')).data
+    return  axios.get('offerings')
   }
 }

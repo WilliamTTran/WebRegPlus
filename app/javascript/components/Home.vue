@@ -25,7 +25,7 @@
                            :rows="3"
                            :max-rows="6">
           </b-form-textarea>
-          <b-button class="my-4" variant="secondary" @click="generateCourseList">
+          <b-button class="my-4 ml-auto" variant="secondary" @click="generateCourseList">
             Generate Schedules!
           </b-button>
           <h2 class="mt-2 mb-4">
@@ -47,11 +47,11 @@
 
       <div v-if="!isHome" >
         <h2 class="mb-4">
-          Available Schedules
+          Schedule statistics
         </h2>
 
         <!-- Select Schedule -->
-        <b-table hover responsive :items="schedules" :fields="fields" style="cursor:pointer; background-color:white" @click="scheduleRowClicked"></b-table>
+        <b-table responsive :items="schedules" :fields="fields" style="background-color:white" @click="scheduleRowClicked"></b-table>
 
         <!-- Accordion List -->
         <h2 class="mt-2 mb-4">
@@ -70,7 +70,13 @@
             </b-card-header>
             <b-collapse :id="'fall' + item.course.replace(' ', '')" role="tabpanel">
               <b-card-body>
-                <p class="card-text">
+                <b-embed v-if="item.podcastUrl" type="iframe"
+                         style="margin-bottom: 1rem"
+                         aspect="16by9"
+                         :src=item.podcastUrl
+                         allowfullscreen
+                ></b-embed>
+                <p :class="['card-text', { 'my-3' : item.podcastUrl }]">
                   {{ item.description }}
                 </p>
                 <p v-if="item.prereqs">
@@ -80,10 +86,13 @@
                   Professor Recommendation (CAPES): {{ item.profRec + '%' }}
                 </p>
                 <p v-if="item.rmpScore">
-                  Professor Recommendation (RateMyProfessor): {{ item.rmpScore + '%'}}
+                  Professor Recommendation (RateMyProfessor): {{ item.rmpScore}}
                 </p>
                 <p v-if="item.studentRec">
                   Student Recommendation: {{ item.studentRec + '%' }}
+                </p>
+                <p v-if="item.avgGPA">
+                  Average GPA: {{ item.avgGPA }}
                 </p>
                 <p v-if="item.studyHr">
                   Average Hours per week: {{ item.studyHr }}
@@ -109,6 +118,11 @@
             </b-card-header>
             <b-collapse :id="'winter' + item.course.replace(' ', '')" role="tabpanel">
               <b-card-body>
+                <b-embed v-if="item.podcastUrl" type="iframe"
+                         aspect="16by9"
+                         :src=item.podcastUrl
+                         allowfullscreen
+                ></b-embed>
                 <p class="card-text">
                   {{ item.description }}
                 </p>
@@ -119,10 +133,13 @@
                   Professor Recommendation (CAPES): {{ item.profRec + '%' }}
                 </p>
                 <p v-if="item.rmpScore">
-                  Professor Recommendation (RateMyProfessor): {{ item.rmpScore + '%'}}
+                  Professor Recommendation (RateMyProfessor): {{ item.rmpScore}}
                 </p>
                 <p v-if="item.studentRec">
                   Student Recommendation: {{ item.studentRec + '%' }}
+                </p>
+                <p v-if="item.avgGPA">
+                  Average GPA: {{ item.avgGPA }}
                 </p>
                 <p v-if="item.studyHr">
                   Average Hours per week: {{ item.studyHr }}
@@ -148,6 +165,11 @@
             </b-card-header>
             <b-collapse :id="'spring' + item.course.replace(' ', '')" role="tabpanel">
               <b-card-body>
+                <b-embed v-if="item.podcastUrl" type="iframe"
+                         aspect="16by9"
+                         :src=item.podcastUrl
+                         allowfullscreen
+                ></b-embed>
                 <p class="card-text">
                   {{ item.description }}
                 </p>
@@ -158,10 +180,13 @@
                   Professor Recommendation (CAPES): {{ item.profRec + '%' }}
                 </p>
                 <p v-if="item.rmpScore">
-                  Professor Recommendation (RateMyProfessor): {{ item.rmpScore + '%'}}
+                  Professor Recommendation (RateMyProfessor): {{ item.rmpScore}}
                 </p>
                 <p v-if="item.studentRec">
                   Student Recommendation: {{ item.studentRec + '%' }}
+                </p>
+                <p v-if="item.avgGPA">
+                  Average GPA: {{ item.avgGPA }}
                 </p>
                 <p v-if="item.studyHr">
                   Average Hours per week: {{ item.studyHr }}
@@ -181,8 +206,8 @@
 </template>
 
 <script>
-    import data from './data.json';
     import scratch from '../scratch.js';
+    import api from './api.js';
     /*const items = [
         { course: 'CSE 20', name: 'Secret Math', startTime: '8:00 am', endTime: '9:50 am', days: 'MWF',
             description: 'Basic discrete mathematical structures: sets, relations, functions, sequences, equivalence relations, partial orders, and number systems. Methods of reasoning and proofs: prepositional logic, predicate logic, induction, recursion, and pigeonhole principle. Infinite sets and diagonalization. Basic counting techniques; permutation and combinations. Applications will be given to digital logic design, elementary number theory, design of programs, and proofs of program correctness. Students who have completed Math 109 may not receive credit for CSE 20. Credit not offered for both Math 15A and CSE 20. Equivalent to Math 15A.'},
@@ -193,36 +218,30 @@
     let fallItems = [];
     let winterItems = [];
     let springItems = [];
-    const schedules = [
+    /*const schedules = [
         { hours: 20, CAPESScore: 70, RMPScore: 65, studentScore: 55, gpa: 3.23},
         { hours: 22, CAPESScore: 68, RMPScore: 66, studentScore: 60, gpa: 3.19},
         { hours: 18, CAPESScore: 64, RMPScore: 62, studentScore: 48, gpa: 3.35},
-    ];
+    ];*/
     const fields = [
+        {
+            key: 'season',
+        },
         {
             key: 'hours',
             label: 'Average Hours',
-            sortable: true
         },
         {
             key: 'gpa',
             label: 'Average GPA',
-            sortable: true,
         },
         {
-            key: 'CAPESScore',
-            label: 'Professor Score (CAPES)',
-            sortable: true
+            key: 'profScore',
+            label: 'Professor Rec.',
         },
         {
-            key: 'RMPScore',
-            label: 'Professor Score (RateMyProfessor)',
-            sortable: true,
-        },
-        {
-            key: 'studentScore',
-            label: 'Student Score (CAPES)',
-            sortable: true,
+            key: 'studentRecommendation',
+            label: 'Class Rec.',
         }
     ];
     const events = [
@@ -241,32 +260,32 @@
             allDay : false,
         },
     ]
-    let calendar = [
-        {time: '8:00 am', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
-        {time: '8:30 am', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
-        {time: '9:00 am', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
-        {time: '9:30 am', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
-        {time: '10:00 am', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
-        {time: '10:30 am', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
-        {time: '11:00 am', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
-        {time: '11:30 am', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
-        {time: '12:00 am', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
-        {time: '12:30 am', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
-        {time: '1:00 pm', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
-        {time: '1:30 pm', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
-        {time: '2:00 pm', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
-        {time: '2:30 pm', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
-        {time: '3:00 pm', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
-        {time: '3:30 pm', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
-        {time: '4:00 pm', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
-        {time: '4:30 pm', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
-        {time: '5:00 pm', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
-        {time: '5:30 pm', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
-        {time: '6:00 pm', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
-        {time: '6:30 pm', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
-        {time: '7:00 pm', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
-        {time: '7:30 pm', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
-    ]
+    const original_calendar = [
+        {time: '8:00 AM', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
+        {time: '8:30 AM', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
+        {time: '9:00 AM', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
+        {time: '9:30 AM', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
+        {time: '10:00 AM', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
+        {time: '10:30 AM', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
+        {time: '11:00 AM', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
+        {time: '11:30 AM', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
+        {time: '12:00 PM', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
+        {time: '12:30 PM', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
+        {time: '1:00 PM', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
+        {time: '1:30 PM', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
+        {time: '2:00 PM', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
+        {time: '2:30 PM', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
+        {time: '3:00 PM', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
+        {time: '3:30 PM', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
+        {time: '4:00 PM', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
+        {time: '4:30 PM', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
+        {time: '5:00 PM', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
+        {time: '5:30 PM', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
+        {time: '6:00 PM', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
+        {time: '6:30 PM', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
+        {time: '7:00 PM', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
+        {time: '7:30 PM', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', _cellVariants:{}},
+    ];
 
   export default {
       data: function () {
@@ -275,10 +294,10 @@
               fallItems: fallItems,
               winterItems: winterItems,
               springItems: springItems,
-              schedules: schedules,
+              schedules: [],
               fields: fields,
               events: events,
-              calendar: calendar,
+              calendar: [],
               courseText: ''
       }
     },
@@ -300,9 +319,11 @@
                         days.push('monday');
                         break;
                     case 'T':
-                        i++;
-                        if(dayString.charAt(i) == 'u') days.push('tuesday');
-                        else days.push('thursday')
+                        if(i + 1 < dayString.length && dayString.charAt(i + 1) == 'h') {
+                            days.push('thursday');
+                            i++;
+                        }
+                        else days.push('tuesday')
                         break;
                     case 'W':
                         days.push('wednesday');
@@ -328,19 +349,19 @@
             else endStartTime += ':00 ';
             endStartTime += endTime.split(':')[1].split(' ')[1];
 
-            for(let i = 0; i < calendar.length; i++) {
-                if(newStartTime == calendar[i].time) {
+            for(let i = 0; i < this.calendar.length; i++) {
+                if(newStartTime == this.calendar[i].time) {
                     startIndex = i;
                 }
-                if(endStartTime == calendar[i].time) {
+                if(endStartTime == this.calendar[i].time) {
                     endIndex = i;
                 }
             }
 
             for(let dayIndex = 0; dayIndex < days.length; dayIndex++) {
                 for (let i = startIndex; i <= endIndex; i++) {
-                    calendar[i][days[dayIndex]] = course;
-                    calendar[i]._cellVariants[days[dayIndex]] = "info";
+                    this.calendar[i][days[dayIndex]] = course;
+                    this.calendar[i]._cellVariants[days[dayIndex]] = "info";
                 }
             }
         },
@@ -348,14 +369,16 @@
             this.fallItems = [];
             this.winterItems = [];
             this.springItems = [];
+            this.schedules = [];
+            this.calendar = JSON.parse(JSON.stringify(original_calendar));
 
-            let splitArray = this.courseText.split(';');
+            let splitArray = this.courseText.split(/[,;](?=\s*?)/gm);
             let courseList = [];
             for(let i = 0; i < splitArray.length; i++) {
-                courseList.push(splitArray[i]);
+                courseList.push(splitArray[i].trim());
             }
             this.isHome = false;
-            let schedule = scratch.createSchedule(courseList, data);
+            let schedule = scratch.createSchedule(courseList, this.offerings);
             console.log(schedule);
             for(let season in schedule) {
                 for(let course in schedule[season]) {
@@ -366,10 +389,15 @@
                             profName: schedule[season][course].prof_name,
                             profRec: schedule[season][course].prof_rec_percent,
                             studentRec: schedule[season][course].class_rec_precent,
-                            rmpScore: schedule[season][course].rmpScore,
+                            rmpScore: schedule[season][course].rmp_score,
                             studyHr: schedule[season][course].study_hr,
+                            avgGPA: schedule[season][course].avg_gpa,
                             units: schedule[season][course].units,
                             prereqs: schedule[season][course].prereqs,
+                            podcastUrl: schedule[season][course].podcast_url,
+                            days: schedule[season][course].lecture_days,
+                            startTime: schedule[season][course].lecture_start,
+                            endTime: schedule[season][course].lecture_end,
                             description: schedule[season][course].description
                         });
                     }
@@ -380,10 +408,12 @@
                             profName: schedule[season][course].prof_name,
                             profRec: schedule[season][course].prof_rec_percent,
                             studentRec: schedule[season][course].class_rec_precent,
-                            rmpScore: schedule[season][course].rmpScore,
+                            rmpScore: schedule[season][course].rmp_score,
                             studyHr: schedule[season][course].study_hr,
+                            avgGPA: schedule[season][course].avg_gpa,
                             units: schedule[season][course].units,
                             prereqs: schedule[season][course].prereqs,
+                            podcastUrl: schedule[season][course].podcast_url,
                             description: schedule[season][course].description
                         });
                     }
@@ -394,21 +424,40 @@
                             profName: schedule[season][course].prof_name,
                             profRec: schedule[season][course].prof_rec_percent,
                             studentRec: schedule[season][course].class_rec_precent,
-                            rmpScore: schedule[season][course].rmpScore,
+                            rmpScore: schedule[season][course].rmp_score,
                             studyHr: schedule[season][course].study_hr,
+                            avgGPA: schedule[season][course].avg_gpa,
                             units: schedule[season][course].units,
                             prereqs: schedule[season][course].prereqs,
+                            podcastUrl: schedule[season][course].podcast_url,
                             description: schedule[season][course].description
                         });
                     }
                 }
             }
-            //for(let i = 0; i < items.length; i++) {
-            //    this.addToCalendar(items[i].course, items[i].days, items[i].startTime, items[i].endTime);
-            //}
+            for(let i = 0; i < this.fallItems.length; i++) {
+                if(this.fallItems[i].days != null) {
+                    this.addToCalendar(this.fallItems[i].course, this.fallItems[i].days,
+                        this.fallItems[i].startTime, this.fallItems[i].endTime);
+                }
+            }
+            let scheduleData = scratch.calculateData(schedule);
+            for(let i = 0; i < 3; i++)
+            {
+                if(i == 0) this.schedules.push({season: 'Fall', hours: scheduleData['fall'].study_hr,
+                    profScore: scheduleData['fall'].season_prof_rec, studentRecommendation: scheduleData['fall'].season_class_rec,
+                    gpa: scheduleData['fall'].avg_gpa});
+                if(i == 1) this.schedules.push({season: 'Winter', hours: scheduleData['winter'].study_hr,
+                    profScore: scheduleData['winter'].season_prof_rec, studentRecommendation: scheduleData['winter'].season_class_rec,
+                    gpa: scheduleData['winter'].avg_gpa});
+                if(i == 2) this.schedules.push({season: 'Spring', hours: scheduleData['spring'].study_hr,
+                    profScore: scheduleData['spring'].season_prof_rec, studentRecommendation: scheduleData['spring'].season_class_rec,
+                    gpa: scheduleData['spring'].avg_gpa});
+            }
         },
     },
-    created: function () {
+    created: async function () {
+       this.offerings = (await api.getOfferings()).data;
     }
   }
 </script>

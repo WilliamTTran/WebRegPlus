@@ -3,6 +3,9 @@
   "private": true,
   "dependencies": {
     "@rails/webpacker": "^3.5.5",
+    "axios": "^0.18.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-polyfill": "^6.26.0",
     "babel-preset-stage-2": "^6.24.1",
     "babel-preset-vue-app": "^2.0.0",
     "bootstrap-vue": "^2.0.0-rc.11",

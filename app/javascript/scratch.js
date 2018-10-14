@@ -20,13 +20,13 @@ const REQUIRED_COURSES = [
 ];
 
 function createSchedule(taken, data) {
-    data = data.filter(d => !taken.includes(d.number));
     if (taken.includes('CSE 8B') && !taken.includes('CSE 8A')) {
         taken.push('CSE 8A')
     }
     if (taken.includes('CSE 11') && !taken.includes('CSE 8B')) {
         taken.push('CSE 8A', 'CSE 8B')
     }
+    data = data.filter(d => !taken.includes(d.number));
 
     let fall = [];
     let winter = [];
@@ -50,9 +50,18 @@ function createSchedule(taken, data) {
        return b.score - a.score;
     });
 
-    for (let i = 0; i < courseScores.length; i++) {
-        console.log(courseScores[i].course.number + '\t' + courseScores[i].score)
-        insertIntoSchedule(courseScores[i].course, schedule, taken);
+    for(let c = 0; c < 3; c++) {
+        for (let i = 0; i < courseScores.length; i++) {
+            if(courseScores[i].course.season === 'winter') {
+                console.log('\n' + courseScores[i].course.number)
+                console.log(prereqCheck(courseScores[i].course, taken))
+                console.log(prereqList(courseScores[i].course))
+            }
+            if (insertIntoSchedule(courseScores[i].course, schedule, taken)) {
+                courseScores.splice(i, 1);
+                i--;
+            }
+        }
     }
 
     console.log('\nFall');
@@ -73,15 +82,19 @@ function createSchedule(taken, data) {
 
 function insertIntoSchedule(offering, schedule, taken) {
     if (schedule[0].length < 3 && offering.season === 'fall' && canTakeQuarter(offering, schedule, taken)) {
-        //if (!checkTimeConflict(schedule[0], offering))
+        if (!checkTimeConflict(schedule[0], offering)) {
             schedule[0].push(offering);
+            return true;
+        }
     } else if (schedule[1].length < 3 && offering.season === 'winter' && canTakeQuarter(offering, [schedule[1], schedule[2]], taken.concat(schedule[0].map(function(c) { return c.number; })))) {
-        //if (!checkTimeConflict(schedule[1], offering))
-            schedule[1].push(offering);
+        schedule[1].push(offering);
+        return true;
+
     } else if (schedule[2].length < 3 && offering.season === 'spring' && canTakeQuarter(offering, [schedule[2]], taken.concat(schedule[0].concat(schedule[1]).map(function(c) { return c.number; })))) {
-        //if (!checkTimeConflict(schedule[2], offering))
-            schedule[2].push(offering);
+        schedule[2].push(offering);
+        return true;
     }
+    return false;
 }
 
 function canTakeQuarter(offering, seasonsNowAndAfter, taken) {
@@ -133,6 +146,9 @@ function prereqCheck(course, classesTaken) {
 function checkTimeConflict(season, course) {
     const days = ['M', 'TU', 'W', 'TH', 'F'];
     for (let i = 0; i < season.length; i++) {
+        if (season[i].lecture_days === null || course.lecture_days === null) {
+            continue;
+        }
         let lecConflict = false;
         for (let j = 0; j < days.length; j++) {
             if (season[i].lecture_days.includes(days[j]) && course.lecture_days.includes(days[j])) {
@@ -153,7 +169,7 @@ function checkTimeConflict(season, course) {
         const s_fs = get24Hr(season[i].final_start);
         const s_fe = get24Hr(season[i].final_end);
         const c_fs = get24Hr(course.final_start);
-        const c_se = get24Hr(course.final_end);
+        const c_fe = get24Hr(course.final_end);
         // Finals conflict
         if ((s_fs <= c_fs && s_fe >= c_fs) || (s_fs <= c_fe && s_e >= c_fe)) return true;
     }
@@ -161,11 +177,11 @@ function checkTimeConflict(season, course) {
 }
 
 function get24Hr(time) {
+    if(time == null) return null;
     const hr = (Number.parseInt(time.split(':')[0]) + (time.includes('PM') ? 12 : 0) ) % 24;
     return hr + ':' + time.split(':')[1].replace(/[^0-9]/g, '');
 }
 
-console.log(get24Hr('3:00 PM'))
 
 function calculateData(schedule) {
     const seasons = ['fall', 'winter', 'spring'];
@@ -181,17 +197,17 @@ function calculateData(schedule) {
         let season_class_rec = 0;
         let season_study_hr = 0;
         for(let j = 0; j < schedule[i].length; j++) {
-            season_gpa += schedule[i][j].avg_gpa;
-            season_prof_rec += schedule[i][j].prof_rec_percent;
-            season_class_rec += schedule[i][j].class_rec_percent;
-            season_study_hr += schedule[i][j].study_hr;
+            season_gpa += !schedule[i][j].avg_gpa ? 3 : schedule[i][j].avg_gpa;
+            season_prof_rec += !schedule[i][j].prof_rec_percent || schedule[i][j].prof_rec_percent == null ? 50 : schedule[i][j].prof_rec_percent;
+            season_class_rec += !schedule[i][j].class_rec_percent || schedule[i][j].class_rec_percent  == null? 50 : schedule[i][j].class_rec_percent;
+            season_study_hr += !schedule[i][j].study_hr || schedule[i][j].study_hr == null ? 6 : schedule[i][j].study_hr;
         }
 
         data[seasons[i]] = {
-            avg_gpa: season_gpa / schedule[i].length,
-            season_prof_rec: season_prof_rec / schedule[i].length,
-            season_class_rec: season_class_rec / schedule[i].length,
-            study_hr: season_study_hr / schedule[i].length,
+            avg_gpa: schedule[i].length ? Math.round((season_gpa / schedule[i].length) * 100) / 100 : '?',
+            season_prof_rec: schedule[i].length ? Math.round(season_prof_rec / schedule[i].length  * 100) / 100: '?',
+            season_class_rec: schedule[i].length ? Math.round(season_class_rec / schedule[i].length  * 100) / 100: '?',
+            study_hr: schedule[i].length ? Math.round(season_study_hr / schedule[i].length * 100) / 100 : '?',
         };
         data.avg_gpa += season_gpa;
         data.season_prof_rec += season_prof_rec;
@@ -199,10 +215,10 @@ function calculateData(schedule) {
         data.study_hr += season_study_hr;
     }
 
-    data.avg_gpa /= schedule.length * schedule[0].length;
-    data.season_prof_rec /= schedule.length * schedule[0].length;
-    data.season_class_rec /= schedule.length * schedule[0].length;
-    data.study_hr /= schedule.length * schedule[0].length;
+    data.avg_gpa = Math.round(data.avg_gpa / (schedule.length * schedule[0].length) * 100) / 100;
+    data.season_prof_rec /= Math.round(data.avg_gpa / (schedule.length * schedule[0].length) * 100) / 100;
+    data.season_class_rec /= Math.round(data.avg_gpa / (schedule.length * schedule[0].length) * 100) / 100;
+    data.study_hr /= Math.round(data.avg_gpa / (schedule.length * schedule[0].length) * 100) / 100;
 
     return data;
 }
