@@ -3,9 +3,11 @@ Rails.application.routes.draw do
   namespace :api do
     post 'courses/' => 'courses#post'
     get 'courses/' => 'courses#get'
+    delete 'courses/' => 'courses#delete'
 
     post 'offerings/' => 'offerings#post'
     get 'offerings/' => 'offerings#get'
+    delete 'offerings/' => 'offerings#delete'
   end
 
   root to: 'hello#index'

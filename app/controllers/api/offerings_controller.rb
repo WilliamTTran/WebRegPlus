@@ -2,7 +2,10 @@ class Api::OfferingsController < ActionController::API
   def post
     offerings = JSON.parse(request.raw_post)
     offerings.each do |offering|
-      offering['course_id'] = Course.find_by_number(offering['course_number'])
+      course = Course.find_by(number: offering['course_number'])
+      offering['course_id'] = course.nil? ? nil : course.id
+      offering.delete 'course_number'
+      print(offering.to_s)
     end
     Offering.create(offerings)
     head :ok
