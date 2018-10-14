@@ -10,7 +10,6 @@ class CreateOfferings < ActiveRecord::Migration[5.2]
       t.float :rmp_score
       t.string :season
       t.string :podcast_url
-      t.string :days_of_week
       t.string :lecture_days
       t.string :lecture_room
       t.string :lecture_start

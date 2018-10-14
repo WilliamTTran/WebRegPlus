@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_10_14_091953) do
+ActiveRecord::Schema.define(version: 2018_10_14_122607) do
 
   create_table "courses", force: :cascade do |t|
     t.string "number"
@@ -32,7 +32,6 @@ ActiveRecord::Schema.define(version: 2018_10_14_091953) do
     t.float "rmp_score"
     t.string "season"
     t.string "podcast_url"
-    t.string "days_of_week"
     t.string "lecture_days"
     t.string "lecture_room"
     t.string "lecture_start"

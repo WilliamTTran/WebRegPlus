@@ -10,7 +10,6 @@ one:
   rmp_score: 1.5
   season: MyString
   podcast_url: MyString
-  days_of_week: MyString
   lecture_days: MyString
   lecture_room: MyString
   lecture_start: MyString
@@ -29,7 +28,6 @@ two:
   rmp_score: 1.5
   season: MyString
   podcast_url: MyString
-  days_of_week: MyString
   lecture_days: MyString
   lecture_room: MyString
   lecture_start: MyString

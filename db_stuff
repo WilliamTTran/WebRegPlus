@@ -2,4 +2,4 @@ Course
 rails generate model Course number:string name:string prereqs:string description:string units:string
 
 Offering
-rails generate model Offering course:references prof_name:string prof_rec_percent:float class_rec_percent:float study_hr:float avg_gpa:float rmp_score:float season:string podcast_url:string days_of_week:string lecture_days:string lecture_room:string lecture_start:string lecture_end:string final_day:string final_start:string final_end:string
+rails generate model Offering course:references prof_name:string prof_rec_percent:float class_rec_percent:float study_hr:float avg_gpa:float rmp_score:float season:string podcast_url:string lecture_days:string lecture_room:string lecture_start:string lecture_end:string final_day:string final_start:string final_end:string
